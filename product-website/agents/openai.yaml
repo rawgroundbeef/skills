@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Website"
+  short_description: "Sharpen product pages for clarity and conversion"
+  default_prompt: "Use $product-website to audit and improve this product website for clarity, proof, conversion, and shareability."
