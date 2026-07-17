@@ -1,7 +1,0 @@
-interface:
-  display_name: "Trello"
-  short_description: "Manage Trello boards through the API."
-  default_prompt: "Use $trello to inspect my configured board and update cards."
-
-policy:
-  allow_implicit_invocation: true
