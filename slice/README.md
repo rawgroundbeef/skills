@@ -61,4 +61,4 @@ Or hand it a kickoff brief, issue, rough requirements, or an existing PRD and
 let it recover the missing discovery and decisions from the repository.
 
 The executable workflow lives in [SKILL.md](./SKILL.md). It composes naturally
-with [`grill`](../grill/) and [`prd`](../prd/).
+with [`grill`](../grill/), [`uat`](../uat/), and [`prd`](../prd/).

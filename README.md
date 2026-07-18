@@ -17,6 +17,7 @@ your own workflow.
 | ----- | ------------ |
 | [⚔️ `slice`](./slice/) | Shapes a rough idea into a fully grilled, acceptance-driven vertical slice and a cold-start implementation handoff. |
 | [`grill`](./grill/) | Stress-tests a plan against the project's domain language and durable architecture decisions. |
+| [`uat`](./uat/) | Writes a concise, executable manual acceptance plan around observable user behavior and demo readiness. |
 | [`prd`](./prd/) | Builds a product requirements document through interview, codebase exploration, and module design. |
 | [`review`](./review/) | Reviews diffs for correctness, architecture, security, performance, maintainability, and testing risks. |
 | [`pr`](./pr/) | Derives PR copy from the final diff and triages review feedback into address, defer, or dismiss. |
