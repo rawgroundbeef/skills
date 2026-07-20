@@ -1,19 +1,19 @@
 # Agent / LLM-in-the-loop surfaces
 
-When a model sits between an untrusted input and a value-affecting action, it is
+When a model sits between an untrusted input and a consequential action, it is
 an attack surface, not just a feature. Anything the model reads that the system
 did not author is **untrusted text that can carry instructions** — the modern
 form of an injection. Model this explicitly whenever an agent can spend, sign,
-launch, approve, publish, or write to state it later trusts.
+deploy, delete, approve, grant access, publish, or write to state it later trusts.
 
 ## Source → sink
 
-- **Sources** (untrusted): social/user content the agent reads, search/tool
-  results, retrieved documents, price/oracle feeds, third-party API responses,
+- **Sources** (untrusted): user/social content the agent reads, search/tool
+  results, retrieved documents, feeds and oracles, third-party API responses,
   and any prior agent output that was itself derived from the above.
-- **Sinks** (value-affecting): move/transfer, sign, launch/deploy, approve,
-  grant, and — for agents that write publicly — **publish** (post, commit to a
-  public store, message). Memory/knowledge the agent will later act on is a
+- **Sinks** (consequential): move/transfer, sign, deploy/launch, delete, approve,
+  grant access, and — for agents that write publicly — **publish** (post, commit
+  to a public store, message). Memory/knowledge the agent will later act on is a
   *deferred* sink: poison it now, misbehave later.
 
 A threat is a path from an attacker-controlled source to a sink. Enumerate the
@@ -21,20 +21,21 @@ sinks first (there are few), then trace which sources can reach each.
 
 ## The four sinks and how to close them
 
-1. **Money sink** — trick the agent into moving value to the attacker.
-   *Close by construction:* give the agent no "transfer to an arbitrary
-   destination" primitive. Its value actions are specific and bounded, and
-   destinations are fixed in deterministic code. No capability, no abuse.
+1. **Value sink** — trick the agent into moving money/value/access to the
+   attacker. *Close by construction:* give the agent no "transfer/grant to an
+   arbitrary destination" primitive. Its consequential actions are specific and
+   bounded, and destinations/scopes are fixed in deterministic code. No
+   capability, no abuse.
 
 2. **Secret sink** — trick the agent into revealing keys/credentials.
    *Close by construction:* secrets never enter the model's context. They live in
-   the value-moving code path only. A secret that is never present cannot be
+   the consequential code path only. A secret that is never present cannot be
    exfiltrated, no matter how clever the injection.
 
-3. **Action sink** (launch/sign/approve/grant) — manipulate the agent into a
-   value action against policy (a scam or infringing launch, a bad approval).
-   *Control deterministically:* enforce every never-cross rule (blacklist,
-   spend/rate cap, allow-listed counterparties, provenance/multi-source
+3. **Action sink** (deploy/sign/delete/approve/grant) — manipulate the agent into
+   a consequential action against policy (an infringing deploy, a bad approval, a
+   destructive op). *Control deterministically:* enforce every never-cross rule
+   (blacklist, spend/rate cap, allow-listed counterparties, provenance/multi-source
    requirement) in code the model cannot influence. A rule in a prompt is
    advisory; a rule in the plumbing is binding.
 
@@ -57,9 +58,10 @@ sinks first (there are few), then trace which sources can reach each.
 ## Two-stage read (breaking the source→sink link)
 
 The highest-leverage structural control: the context that *reads untrusted input*
-and the context that *holds the value tools* should not be the same context.
+and the context that *holds the consequential tools* should not be the same
+context.
 
-- A first pass reads raw sources with **no value tools** and emits only
+- A first pass reads raw sources with **no consequential tools** and emits only
   structured, typed signals (facts, not prose).
 - The decision/action pass sees only those structured signals — never the raw
   attacker text — and is the only context with the sinks.
