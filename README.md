@@ -20,6 +20,7 @@ your own workflow.
 | [`uat`](./uat/) | Writes a concise, executable manual acceptance plan around observable user behavior and demo readiness. |
 | [`prd`](./prd/) | Builds a product requirements document through interview, codebase exploration, and module design. |
 | [`review`](./review/) | Reviews diffs for correctness, architecture, security, performance, maintainability, and testing risks. |
+| [`threat-model`](./threat-model/) | STRIDE threat model for software that holds, moves, or authorizes value — and for agent-in-the-loop money flows; source→sink paths, ranked risks, controls. |
 | [`pr`](./pr/) | Derives PR copy from the final diff and triages review feedback into address, defer, or dismiss. |
 | [`typescript-cli`](./typescript-cli/) | Builds, migrates, and reviews reliable, distributable Node.js CLIs in TypeScript. |
 | [`product-website`](./product-website/) | Builds and audits clear, credible, conversion-focused product marketing sites. |
