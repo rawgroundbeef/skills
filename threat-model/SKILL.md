@@ -1,6 +1,14 @@
 ---
 name: threat-model
-description: Threat-models a system, feature, or attack surface from first principles — assets, actors, and the paths from untrusted input to consequential action — then ranks risks and recommends controls worst-first, pushing each catastrophic outcome toward impossible-by-construction. Strongest where a failure is hard to reverse: moving money or value, handling keys/secrets, granting access, taking autonomous/agent actions, deleting or publishing. Use when designing something sensitive, evaluating a new attack surface, hardening a consequential flow, or asked "what could go wrong and who could cause it."
+description: >-
+  Threat-models a system, feature, or attack surface from first principles —
+  assets, actors, and the paths from untrusted input to consequential action —
+  then ranks risks and recommends controls worst-first, pushing each catastrophic
+  outcome toward impossible-by-construction. Strongest where a failure is hard
+  to reverse: moving money or value, handling keys/secrets, granting access,
+  taking autonomous/agent actions, deleting or publishing. Use when designing
+  something sensitive, evaluating a new attack surface, hardening a
+  consequential flow, or asked "what could go wrong and who could cause it."
 ---
 
 # Threat Model
