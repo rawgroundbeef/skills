@@ -66,6 +66,13 @@ and agent are using the same language.
 Use code and docs to answer questions whenever possible. Ask the user only for
 decisions that cannot be resolved from the repo.
 
+Before a decision leaves the grill, probe it against the code it will land
+on: open the seams it touches (the schemas, the unique constraints, the
+dispatch or approval paths, the route allowlists, the persistence sites) and
+confirm the mechanism the decision assumes actually exists. A decision that
+describes what the code cannot do is the most expensive kind of finding to
+catch later; most blocking adversarial-review findings are this kind.
+
 Write `.planning/{NNNN-feature-slug}/discovery.md` as the slice-local grill
 artifact. Use it for:
 
@@ -187,10 +194,23 @@ contaminated by conversation memory.
   environment setup, acceptance criteria that cannot actually be observed.
 - Ask the closing question: could a fresh context implement this without
   asking the user anything the artifacts should have answered?
+- Tag each finding blocking or non-blocking: blocking means a genuine gap a
+  cold implementer cannot resolve alone; a judgement call an implementer can
+  reasonably make is non-blocking.
 
 Route each finding to the upstream artifact that is wrong and fix it there —
 do not patch over it in the bootstrap. The review passes when it stops
 producing blocking findings.
+
+Keep the loop short. Give the second and later reviewers the previous report
+so they re-verify its pointers quickly and spend their effort hunting beyond
+it; a cold read of the artifacts is still required, but a cold re-derivation
+of every pointer is not. Cap the loop at three passes: if the third pass still
+produces blocking findings, fix them, tell the human the count and the trend,
+and proceed to step 7 anyway — the implementation subagent's first report is
+the next review, and it is cheaper than a fourth cold read. When a pass finds
+only document contradictions or pointer drift, fix and proceed without
+another pass.
 
 Report the outcome to the human in one or two lines before any implementation
 begins:
