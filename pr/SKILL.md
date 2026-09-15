@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Write plain-language PR titles and descriptions grounded in the final diff and actual verification results, open or update the pull request, and triage review feedback into address / defer / dismiss. Use when opening a PR, shipping a branch, tightening a PR title or description, or responding to review comments from humans or bots.
+description: Write and publish clear pull requests, triage review feedback, and babysit a PR through bot reviews and CI. Use when opening or updating a PR, responding to review comments, or asked to babysit a PR until reviewers are satisfied.
 ---
 
 # PR title & description
@@ -140,3 +140,16 @@ action is never an option.
    reviewer to answer.
 5. Push once after all fixes and doc updates are committed. Report each
    comment's bucket, what changed, the commit SHA, and the reasoning.
+
+## Babysit a PR
+
+"Babysit the PR" means actively repeat review requests, triage, fixes, replies,
+and verification until the current revision has sufficient positive evidence
+from Cursor Bugbot, Copilot, and Greptile, plus passing required CI. It is not
+a one-time review or a promise to monitor after ending the turn.
+
+Read [references/babysitting.md](references/babysitting.md) for reviewer triggers,
+affordable sub-agent delegation, completion criteria, and exception handling.
+The parent agent owns decisions and thread resolutions. Target Greptile 5/5;
+do not manufacture a clean result by repeatedly dismissing valid findings.
+Babysitting does not authorize merging unless the user also asks to merge.

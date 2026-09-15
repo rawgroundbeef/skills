@@ -16,6 +16,9 @@ with technical detail where it helps a reviewer assess the change.
 - Branch push plus PR creation or update.
 - Review-comment triage into **Address**, **Defer**, or **Dismiss**.
 - A reply and resolution on every original review thread.
+- PR babysitting: affordable sub-agent fixes and repeated Cursor Bugbot,
+  Copilot, and Greptile reviews until the current revision has positive review
+  evidence and passing CI, normally including Greptile 5/5.
 
 ## Try it
 
@@ -26,5 +29,11 @@ Use $pr to write and open the pull request from the final diff.
 ```text
 Use $pr to triage the feedback on this pull request.
 ```
+
+```text
+Babysit PR #453 until the reviewers are satisfied.
+```
+
+Babysitting leaves the merge to the user unless merging is also authorized.
 
 The executable workflow lives in [SKILL.md](./SKILL.md).
