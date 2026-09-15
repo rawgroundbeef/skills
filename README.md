@@ -21,7 +21,7 @@ your own workflow.
 | [`prd`](./prd/) | Builds a product requirements document through interview, codebase exploration, and module design. |
 | [`review`](./review/) | Reviews diffs for correctness, architecture, security, performance, maintainability, and testing risks. |
 | [`threat-model`](./threat-model/) | First-principles threat model — source→sink paths, ranked risks, and controls — strongest on hard-to-reverse surfaces: money, secrets, access, agent actions, deletes, publishing. |
-| [`pr`](./pr/) | Derives PR copy from the final diff and triages review feedback into address, defer, or dismiss. |
+| [`pr`](./pr/) | Writes plain-language PR titles and descriptions from the final diff and handles review feedback. |
 | [`typescript-cli`](./typescript-cli/) | Builds, migrates, and reviews reliable, distributable Node.js CLIs in TypeScript. |
 | [`product-website`](./product-website/) | Builds and audits clear, credible, conversion-focused product marketing sites. |
 
