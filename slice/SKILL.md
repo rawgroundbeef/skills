@@ -192,47 +192,59 @@ Route each finding to the upstream artifact that is wrong and fix it there —
 do not patch over it in the bootstrap. The review passes when it stops
 producing blocking findings.
 
-**STOP HERE after the review.** Report the outcome to the human before any
-implementation begins:
+Report the outcome to the human in one or two lines before any implementation
+begins:
 
 - If blocking findings remain, say planning is not ready, summarize the
   blockers, fix the upstream artifacts, and rerun the adversarial review.
-- When the review passes, explicitly tell the human that it passed and provide
-  the bootstrap path for the fresh implementation context.
+- When the review passes, say so, give the bootstrap path, and continue
+  straight into step 7. Do not end the turn waiting for a manual handoff.
 
-Do not continue into implementation in the planning context, even when an
-earlier request broadly authorized the slice. Wait for the handoff into a fresh
-context; the adversarial pass and the human-facing pass report are both required
-planning gates.
+Never implement in the planning context itself. The planning context is the
+orchestrator and reviewer; implementation always runs in a fresh context.
 
-### 7. Clear context, implement, and review
+### 7. Orchestrate implementation from the planning context
 
-Only after the adversarial review passes and the human has been told, start
-implementation from `.planning/{NNNN-feature-slug}/bootstrap.md` in a fresh
-context. If the docs are insufficient to implement cold, update the docs instead
-of relying on remembered conversation.
+The planning model is the frontier, deep-thinking model. It does not stop,
+clear, and ask the human to paste the bootstrap. Once the adversarial review
+passes and the human has been told, the planner provisions the implementation
+itself and stays in the loop as reviewer:
 
-Complete the implementation and run the repository's verification gates from
-`AGENTS.md`. Then spawn a fresh-context subagent, load `$review` in that
-subagent, and review the implementation branch or diff against its integration
-branch. Give the reviewer the bootstrap path and raw review scope; do not give
-it the implementation agent's conclusions or ask it to fix its own findings.
-The implementation agent must not substitute a same-context self-review when a
-review subagent is available.
+1. **Provision a fresh implementation subagent.** Spawn a subagent with no
+   conversation context (never a fork) on a cheaper, implementation-tier model
+   (capable, but geared to building rather than planning; the repo or the
+   user's memory may name it). Its entire prompt is: the bootstrap path, the
+   PR or branch it is responsible for, the branch to start from, and the
+   instruction to execute from the documents and report back with the branch,
+   the diff summary, and verification results. Give it a worktree when the
+   planning context's own tree must stay clean.
+2. **Let it implement.** It completes the work for its PR, runs the
+   repository's verification gates from `AGENTS.md`, and reports. If the docs
+   are insufficient to implement cold, it says so instead of guessing; the
+   planner fixes the upstream artifact and re-dispatches.
+3. **Review from the planning context.** When the subagent reports, the planner
+   reviews the branch or diff against its integration branch: load `$review`
+   in a fresh-context review subagent when available, giving it the bootstrap
+   path and raw review scope, never the implementer's conclusions; otherwise
+   the planner runs `$review` itself and discloses that the review was not
+   independent. The implementer never reviews its own work.
+4. **Loop fixes through new subagents.** Every **Request changes** finding goes
+   to a *new* fresh implementation subagent with the branch, the findings, and
+   the bootstrap path. It fixes, reruns the gates, and reports. The planner
+   reviews again. Repeat until the review returns **APPROVE** with no Request
+   changes findings.
+5. **Preserve and report.** Accepted non-blocking findings go to the slice's
+   `follow-ups.md` using the `$review` skill's durable-follow-up rules. Report
+   the review scope, verdict, verification results, and remaining warnings to
+   the human, then move to the next PR in the sequence the same way.
 
-Route the review result as follows:
+A lower-tier or non-frontier planning model should not orchestrate; it stops
+after step 6, reports the pass, and hands the bootstrap path to the human for a
+fresh frontier or implementation context.
 
-- Address every **Request changes** finding in the implementation context, rerun
-  the verification gates, and spawn another fresh `$review` pass over the
-  revised diff.
-- Preserve accepted non-blocking findings in the slice's `follow-ups.md` using
-  the `$review` skill's durable-follow-up rules.
-- If a review subagent is unavailable, run `$review` in the implementation
-  context and explicitly disclose that the review was not independent.
-
-Do not hand off the implementation until the latest review returns **APPROVE**
-with no Request changes findings. Report the review scope, verdict, verification
-results, and any remaining warnings to the human.
+The human can interrupt at any point; the loop is a default, not a lock. Never
+push or open a pull request from a subagent unless the human asked for it in
+the slice; the `$pr` skill runs when the human says to ship.
 
 ## Follow-ups
 
@@ -267,6 +279,8 @@ Use this section order:
   they are real but out of the current PR.
 - Keep implementation out of scope until the bootstrap is ready, unless the
   user explicitly asks to skip planning.
+- Implementation always runs in a fresh subagent context; the planning context
+  orchestrates and reviews, and routes each round of fixes to a new subagent.
 
 ## Artifact Map
 
@@ -284,9 +298,11 @@ Use this section order:
 
 Planning is ready when discovery, decisions, UAT, PRD, follow-ups, and
 bootstrap agree on scope, terms, acceptance, non-goals, and branch order, and
-the adversarial review has stopped producing blocking findings. Planning is
-ready for handoff only after that passing result has been reported to the human.
+the adversarial review has stopped producing blocking findings. The planner
+reports that pass to the human and then provisions implementation itself
+(step 7); it does not wait for a manual handoff.
 
-Implementation is ready for handoff only after the relevant code is complete,
-the repo's verification gates (from `AGENTS.md`) pass, and the latest `$review`
-pass returns **APPROVE** with no Request changes findings.
+Implementation is done for a PR only after the relevant code is complete, the
+repo's verification gates (from `AGENTS.md`) pass, and the latest `$review`
+pass, run from the planning context over a fresh implementation subagent's
+work, returns **APPROVE** with no Request changes findings.
