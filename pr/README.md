@@ -1,17 +1,18 @@
 # PR
 
-Write reviewer-facing pull request copy from the final diff, publish the branch,
-and close the loop on review feedback.
+Write plain-language pull request copy, publish the branch, and close the loop
+on review feedback.
 
-The skill deliberately ignores the implementation conversation when writing
-the PR story. Every claim must map to the final patch or its durable planning
-artifacts, titles describe the net behavior change, and descriptions stay
-short enough to review.
+The default reader is a nontechnical teammate. Titles name the concrete problem
+or behavior, and descriptions explain the trigger, consequence, and result.
+Change claims stay grounded in the final diff; testing summaries use actual
+results. The skill preserves the user's format and required repo template,
+with technical detail where it helps a reviewer assess the change.
 
 ## What it handles
 
-- House-style PR titles written after the diff is final.
-- Compact descriptions covering behavior, exclusions, verification, and docs.
+- Plain-language PR titles written after the diff is final.
+- Concise descriptions with useful context, testing evidence, and material limitations.
 - Branch push plus PR creation or update.
 - Review-comment triage into **Address**, **Defer**, or **Dismiss**.
 - A reply and resolution on every original review thread.

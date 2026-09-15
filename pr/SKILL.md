@@ -1,13 +1,14 @@
 ---
 name: pr
-description: Write a human-readable PR title and description from the final diff (never from the conversation), open or update the pull request, and triage review feedback into address / defer / dismiss. Use when opening a PR, shipping a branch, tightening a PR title or description, or responding to review comments from humans or bots.
+description: Write plain-language PR titles and descriptions grounded in the final diff and actual verification results, open or update the pull request, and triage review feedback into address / defer / dismiss. Use when opening a PR, shipping a branch, tightening a PR title or description, or responding to review comments from humans or bots.
 ---
 
 # PR title & description
 
-Derivation playbook: the title and description are written FROM THE FINAL
-DIFF — never from conversation memory. The conversation is the story of
-*doing* the work; the reviewer sees only the diff. Write for the reviewer.
+Write for a nontechnical teammate by default. They should understand the
+problem and resulting behavior without knowing the implementation or reading
+the conversation. Ground change claims in the final diff and validation claims
+in actual results. Respect the user's chosen format and required repo template.
 
 ## When invoked
 
@@ -15,56 +16,82 @@ DIFF — never from conversation memory. The conversation is the story of
    the branch was cut from another base or the user names one. Detect it with
    `gh repo view --json defaultBranchRef -q .defaultBranchRef.name` (fallback:
    `git symbolic-ref --short refs/remotes/origin/HEAD`).
-2. Gather inputs — these are the ONLY sources:
+2. Gather the evidence and writing requirements:
    - `git diff {base}...HEAD --stat`, plus the hunks needed to ground claims
    - `git log {base}..HEAD --oneline` (scope check only — never narrate it)
    - `gh pr list --state merged --limit 5` (match the repo's house title style)
+   - The repo's PR template and the user's audience or format preferences
+   - Actual check output, test logs, CI results, or recorded manual verification;
+     distinguish completed checks from suggested verification
    - **If** the branch includes planning docs (e.g. a `.planning/{NNNN-slug}/`
      folder from the `slice` skill), read them for intent and deferred work —
-     but the description is still grounded in the diff, and never restates them.
+     confirm what shipped against the diff. Use linked issues and surrounding
+     code when needed to understand the problem; don't narrate the work session.
 
-## Description contract
+## Description guidance
 
-Budget: **≤ 25 non-empty source lines** (attribution footer, if any, exempt).
-Sections, in order — drop one only when the branch genuinely has nothing for it:
+Open with the concrete problem and result: what triggers it, what goes wrong
+for the affected person, and what happens after this change. For work without a
+direct UI effect, explain who it helps and why, such as a developer whose build
+fails. Do not invent a user-facing effect for an internal change.
 
-| Section          | Budget        | Content                                                                                     |
-| ---------------- | ------------- | ------------------------------------------------------------------------------------------- |
-| What & why       | 2–4 sentences | The problem and the shape of the fix. No chronology.                                        |
-| Behavior changes | 1 line/bullet | Only observable deltas: limits, flags, headers, keys, endpoints, gates, schema.             |
-| Not in this PR   | 1–2 lines     | Deferred work — point at follow-ups / a tracking issue, don't describe it.                  |
-| Verify           | 2–3 bullets   | Commands run + results a reviewer can reproduce.                                             |
-| Docs             | 1 line        | Pointer to any planning docs that ship in the diff — never restate their contents.          |
+Scale the detail to the change. A simple PR usually needs one or two short
+paragraphs and a concise testing summary. Use headings and bullets when they
+help, or when the user's format or repo template requires them. Useful details
+include:
 
-If planning docs ship inside the PR, the description NEVER duplicates them.
-Every duplicated line is a line the reviewer reads twice.
+- **What changes:** the behavior a reviewer needs to assess. Explain necessary
+  technical terms in context; include identifiers, protocols, or implementation
+  detail only when they help assess correctness, compatibility, or a tradeoff.
+- **Testing:** what was checked, the actual result, and a results link when
+  available. Summarize routine checks instead of dumping commands. Include an
+  exact command when it helps reproduce a relevant result. State material
+  failures, checks not run, and limits of the evidence without implying a pass.
+- **Context and follow-ups:** enough explanation to understand the change on
+  its own, with links for depth. Mention deferred work or limitations when they
+  affect the review; skip empty sections and unrelated exclusions.
 
-## Title contract
+Keep explanatory context even when a reviewer could reconstruct it from the
+diff or linked docs. Remove repetition, file inventories, work-session history,
+and abandoned approaches that do not explain a current tradeoff.
+
+## Title guidance
 
 Written LAST, after the description and the verify pass — a title written at
 branch creation describes the plan, not the result.
 
-- ≤ 70 characters, imperative mood, matching the repo's house prefix style
-  (learn it from recently merged PRs).
-- Names the net behavior change with the biggest blast radius, not the
-  activity ("key rate-limit on verified JWT", not "consolidate rate limiter").
-- Release-note test: a teammate reading ONLY the title could write the
-  changelog entry.
+- Aim for ≤ 70 characters and imperative mood, respecting the user's format
+  and the repo's required prefix style.
+- Name the main concrete problem or resulting behavior in familiar words.
+  Keep internal abstractions out of the headline unless they are the subject
+  the intended audience needs to recognize.
+- Read the title on its own: could a teammate understand what changed without
+  knowing the codebase?
 
-## Verify pass (mandatory, against the diff only)
+### Example
 
-Re-read the final diff — not the conversation — and check:
+Before: `fix(agent): preserve sandbox failures during workspace staging`
 
-1. The title covers the largest-blast-radius change actually in the diff.
-2. Every description claim maps to a hunk. No claim from memory.
-3. Zero narration: no "first/then/we discovered", no commit-by-commit retelling.
-4. Nothing restates a linked doc or enumerates files — the diff does that.
-5. Budgets hold. Count the lines.
-6. Delete test: removing a line must lose information not recoverable from the
-   diff + linked docs. If it doesn't, delete the line.
-7. Material changes outside the branch's main purpose (tooling, config, fixes
-   that rode along) get one line each — a reviewer surprised by an unmentioned
-   hunk distrusts the rest of the description.
+After: `fix: stop failed review setup from being marked complete`
+
+Opening: "Before a review starts, Joymore copies the documents into a temporary
+workspace. A technical problem with that workspace could be mistaken for a
+missing file, allowing preparation to be marked complete with documents left
+out. This fix makes preparation fail when the workspace still cannot accept
+the files after retrying."
+
+## Verify pass
+
+Re-read the final diff and verification evidence, then check:
+
+1. The title and opening explain the main problem and result in plain language.
+2. Change claims match the final diff. Test claims match actual logs or results;
+   adding a test does not prove it passed. No stale claims from earlier plans.
+3. Technical detail earns its place by helping the reviewer assess the change.
+4. The description stands on its own, without repetition or a retelling of the
+   implementation process. Necessary context survives the brevity pass.
+5. Material changes outside the branch's main purpose are mentioned briefly.
+6. The user's chosen format and required repo template are preserved.
 
 ## Ship
 
