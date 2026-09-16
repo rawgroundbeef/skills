@@ -23,10 +23,15 @@ or change intended product behavior just to raise a review score.
 2. The usual reviewers are **Cursor Bugbot, Copilot, and Greptile**. "Cursor
    Bug" and "Cursor Bugbot" normally name the same integration; confirm the
    repository's actual accounts rather than tagging a fourth invented bot.
-3. Use completed reviews of the current head as the initial round. Request any
-   missing reviews. After pushing fixes, request a fresh review from each bot
-   that does not automatically start one. Avoid duplicate requests while a
-   matching review is running.
+3. Use available completed reviews and unresolved findings as the initial
+   round. Record each bot's verdict and the SHA it reviewed. A positive verdict
+   clears that bot for this PR: Greptile 5/5, a completed clean Cursor Bugbot
+   review, or a completed Copilot review with no changes needed. Request any
+   missing or uncleared reviews. After pushing fixes, follow up only with bots
+   that still lack a positive verdict, including re-review after their
+   addressed feedback is fixed. Do not manually request a cleared bot unless
+   the user explicitly asks. A new commit does not reset a cleared bot. Avoid
+   duplicate requests while a matching review is running.
 
 Known trigger mechanisms (verify against the installed integration if these
 stop working):
@@ -64,15 +69,20 @@ review.
   after the fix is pushed and verified. Dismiss false positives with a clear
   explanation, then resolve the thread. Record deferred work durably; leave a
   thread open when a real issue or unanswered question still blocks progress.
-- Re-request reviews as needed and repeat. A new commit makes older approval
-  evidence insufficient for the changed code. Verify which head each review
-  actually covers.
+- Re-request reviews as needed and repeat for bots that are not cleared. A new
+  commit requires the parent to inspect the final diff and required CI to pass
+  on the current head, but it does not make an earned positive bot verdict
+  insufficient or require a manual request to that bot. Read automatically
+  triggered reviews from cleared bots and handle any new valid findings; do not
+  manually request a cleared bot. For each review, record the SHA it actually
+  covers so the evidence remains truthful.
 
 ## Completion evidence
 
-The normal target is all of the following on the final head:
+The normal target is all of the following before handoff:
 
-- Required CI passes, with no unresolved actionable findings.
+- The parent has reviewed the final diff, required CI passes on the current
+  head, and there are no unresolved actionable findings.
 - **Greptile: 5/5 confidence**, with no remaining issues that contradict it.
 - **Cursor Bugbot: a completed clean review**, such as no bugs found. A neutral
   check is sufficient only when its review output and findings support that
@@ -81,8 +91,10 @@ The normal target is all of the following on the final head:
   positive assessment. Copilot may submit `COMMENTED` rather than a formal
   `APPROVED` review; read the content.
 
-Silence, an old review, an accepted trigger, or manually resolving every
-thread is not positive review evidence.
+Silence, an accepted trigger, or manually resolving every thread is not
+positive review evidence. A qualifying positive review remains evidence for
+this PR after later commits; its recorded SHA must accompany the status, while
+the parent review and CI still cover the current head.
 
 A lower Greptile score is an exception, not a shortcut. If a fresh review still
 scores 4/5 or 3/5 solely because of specific findings the parent can demonstrate
@@ -95,8 +107,9 @@ loop, weaken review settings, or describe the result as 5/5.
 
 While reviews run, continue independent useful work and check for new feedback
 at a reasonable cadence. Use short interruptible waits and keep the user
-informed; do not spam triggers or busy-poll. Persist the head SHA, per-reviewer
-status, thread dispositions, outstanding work, and next step in a local
+informed; do not spam triggers or busy-poll. Persist the current head SHA,
+per-reviewer verdict and status (including cleared positive verdicts and their
+reviewed SHAs), thread dispositions, outstanding work, and next step in a local
 checkpoint so context compaction does not restart the cycle.
 
 If a reviewer is unavailable, a quota or permission prevents a review, or the

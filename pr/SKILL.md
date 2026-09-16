@@ -143,10 +143,13 @@ action is never an option.
 
 ## Babysit a PR
 
-"Babysit the PR" means actively repeat review requests, triage, fixes, replies,
-and verification until the current revision has sufficient positive evidence
-from Cursor Bugbot, Copilot, and Greptile, plus passing required CI. It is not
-a one-time review or a promise to monitor after ending the turn.
+"Babysit the PR" means actively request the configured reviews, triage, fix,
+reply, and verify until each bot has its required positive verdict for this PR,
+all actionable findings are handled, the parent has reviewed the final diff,
+and required CI passes on the current head. A new commit does not erase an
+earned positive bot verdict. It is not a one-time review or a promise to
+monitor after ending the turn. Stop manually requesting a bot once it gives a
+positive review for this PR; later commits do not change that status.
 
 Read [references/babysitting.md](references/babysitting.md) for reviewer triggers,
 affordable sub-agent delegation, completion criteria, and exception handling.
