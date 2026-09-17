@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Write and publish clear pull requests, triage review feedback, and babysit a PR through bot reviews and CI. Use when opening or updating a PR, responding to review comments, or asked to babysit a PR until reviewers are satisfied.
+description: Write and publish clear pull requests, triage review feedback, and babysit a PR through bot reviews and CI. Use when opening or updating a PR, responding to review comments, or asked to get a PR reviewed, babysit it, or ship it when green. Merge only with explicit user authorization for that PR.
 ---
 
 # PR title & description
@@ -9,6 +9,18 @@ Write for a nontechnical teammate by default. They should understand the
 problem and resulting behavior without knowing the implementation or reading
 the conversation. Ground change claims in the final diff and validation claims
 in actual results. Respect the user's chosen format and required repo template.
+
+## Match the requested work
+
+- A request for wording or a read-only review stays read-only. Opening or
+  updating a PR alone does not request babysitting.
+- "Get it reviewed," "babysit it," and "ship/merge when green" request the
+  active review-and-CI loop below. Continue through findings and checks instead
+  of stopping after opening the PR or requesting a review.
+- Merge only with explicit authorization for this PR. An earlier instruction
+  such as "merge when green" or "ship this PR when green" remains valid while
+  the scope is unchanged; do not ask again once its conditions are met.
+  Opening, reviewing, or babysitting a PR does not by itself authorize merging it.
 
 ## When invoked
 
@@ -21,6 +33,7 @@ in actual results. Respect the user's chosen format and required repo template.
    - `git log {base}..HEAD --oneline` (scope check only — never narrate it)
    - `gh pr list --state merged --limit 5` (match the repo's house title style)
    - The repo's PR template and the user's audience or format preferences
+   - Repository instructions, including required checks and merge conventions
    - Actual check output, test logs, CI results, or recorded manual verification;
      distinguish completed checks from suggested verification
    - **If** the branch includes planning docs (e.g. a `.planning/{NNNN-slug}/`
@@ -34,6 +47,16 @@ Open with the concrete problem and result: what triggers it, what goes wrong
 for the affected person, and what happens after this change. For work without a
 direct UI effect, explain who it helps and why, such as a developer whose build
 fails. Do not invent a user-facing effect for an internal change.
+
+Translate implementation terms into the concrete thing the reader recognizes.
+Explain necessary mechanics after the problem and result; naming the code is
+not an explanation.
+
+For a product change, make the opening a plain-language before/after. Do not
+pack it with detector names, numeric versions, or internal limits just because
+they appear in the diff. Put material implementation details in a separate
+sentence or note and explain why they matter. The evidence grounds the claims;
+it is not a checklist of facts the description must repeat.
 
 Scale the detail to the change. A simple PR usually needs one or two short
 paragraphs and a concise testing summary. Use headings and bullets when they
@@ -70,21 +93,22 @@ branch creation describes the plan, not the result.
 
 ### Example
 
-Before: `fix(agent): preserve sandbox failures during workspace staging`
+Before: `fix: exclude review handoffs from automation evidence`
 
-After: `fix: stop failed review setup from being marked complete`
+After: `fix: stop automatic review messages from prompting suggestions`
 
-Opening: "Before a review starts, Joymore copies the documents into a temporary
-workspace. A technical problem with that workspace could be mistaken for a
-missing file, allowing preparation to be marked complete with documents left
-out. This fix makes preparation fail when the workspace still cannot accept
-the files after retrying."
+Opening: "Joymore's automatic messages after a compliance review were being
+mistaken for customer requests and producing misleading automation suggestions.
+This change excludes those automatic messages while keeping genuine customer
+requests eligible."
 
 ## Verify pass
 
 Re-read the final diff and verification evidence, then check:
 
-1. The title and opening explain the main problem and result in plain language.
+1. A teammate unfamiliar with the code can explain the problem and result from
+   the title and opening alone. Replace unexplained internal terms before
+   publishing.
 2. Change claims match the final diff. Test claims match actual logs or results;
    adding a test does not prove it passed. No stale claims from earlier plans.
 3. Technical detail earns its place by helping the reviewer assess the change.
@@ -100,6 +124,8 @@ Re-read the final diff and verification evidence, then check:
   with the final title and body.
 - End the body with the repo's attribution footer if it uses one.
 - Report the PR URL, the final title, and which verify-pass rules forced edits.
+- When review or conditional shipping was requested, continue into the
+  babysitting loop; publication is not the end of that task.
 
 ## Review feedback triage
 
@@ -123,23 +149,23 @@ action is never an option.
    - **Address** — the finding is real and belongs in this PR. Verify the
      suggestion against the final diff and runtime semantics; implement the
      right shape rather than blindly applying a suggested patch. Run the
-     affected tests and the repo's checks proportionate to the change. Reply
-     with the commit SHA and, when the fix differs from the suggestion, one
-     sentence saying why. Resolve the thread.
+     affected tests and the repo's required checks. Prepare a reply with the
+     fix commit and, when the fix differs from the suggestion, one sentence why.
    - **Defer** — the concern is real but out of scope. Reply with the scope
      reasoning and record the deferred work durably (follow-ups doc or a
-     tracked issue), then resolve the thread.
+     tracked issue).
    - **Dismiss** — the concern doesn't apply, conflicts with a recorded
      decision, or is unjustified gold-plating. Reply with the concrete reason;
-     add no follow-up. Resolve the thread.
-3. Put replies on the inline comment's own thread with
+     add no follow-up.
+3. If fixes or doc changes are needed, commit and push one coherent batch after
+   validation. Never resolve an addressed finding while its fix exists only locally.
+4. Put replies on the inline comment's own thread with
    `gh api repos/{owner}/{repo}/pulls/{N}/comments/{id}/replies -f body=…`,
    never as detached top-level PR comments.
-4. Resolve replied-to threads with GraphQL `resolveReviewThread` using the IDs
+5. Resolve replied-to threads with GraphQL `resolveReviewThread` using the IDs
    from `reviewThreads`. Leave a thread open only when genuinely waiting on the
    reviewer to answer.
-5. Push once after all fixes and doc updates are committed. Report each
-   comment's bucket, what changed, the commit SHA, and the reasoning.
+6. Report each comment's bucket, what changed, the commit SHA, and the reasoning.
 
 ## Babysit a PR
 
@@ -156,3 +182,5 @@ affordable sub-agent delegation, completion criteria, and exception handling.
 The parent agent owns decisions and thread resolutions. Target Greptile 5/5;
 do not manufacture a clean result by repeatedly dismissing valid findings.
 Babysitting does not authorize merging unless the user also asks to merge.
+When that authorization is already present, complete the merge after the
+review and CI conditions are met; follow the reference's merge procedure.

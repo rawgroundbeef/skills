@@ -6,7 +6,10 @@ Treat a request to **babysit a PR** as authorization to request the configured
 review bots, monitor their reviews and CI, delegate in-scope fixes, test,
 commit, push, reply to feedback, and resolve handled threads. Continue the
 loop until the completion criteria below are met. Merging remains a separate
-action requiring user authorization.
+action requiring explicit user authorization for this PR. Earlier authorization
+remains valid while its scope is unchanged; do not ask again when its conditions
+are met. "Get it reviewed" requests this loop. "Merge when green" or "ship this
+PR when green" also authorizes the merge after the loop succeeds.
 
 The parent is the decider. Validate each finding against the actual code and
 product requirements before assigning a fix. A bot's severity or suggested
@@ -120,3 +123,18 @@ review or claim monitoring will continue after the turn ends.
 
 On completion, report the PR link, final head, CI result, each reviewer's
 verdict/score, and any exceptions. Merge only when separately authorized.
+
+## Merge when authorized
+
+If the user authorized merging this PR, perform the merge once the completion
+criteria are met. Otherwise, report it ready for merge and stop there.
+
+- Recheck the PR's current head, required checks, and unresolved findings just
+  before merging. Use the repository's normal merge method and guard against
+  the reviewed head changing, for example with `gh pr merge --match-head-commit`.
+  Do not bypass protections to satisfy a shipping request.
+- Verify that GitHub records the PR as merged and record the merge commit.
+  An accepted auto-merge request or a merge-queue entry is not a completed merge.
+- Distinguish merged from deployed. When the user asked to ship and merging
+  starts a release, follow it to its result and report failures honestly; a
+  successful merge alone does not prove a successful deployment.
