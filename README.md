@@ -15,7 +15,7 @@ your own workflow.
 
 | Skill | What it does |
 | ----- | ------------ |
-| [⚔️ `slice`](./slice/) | Shapes a rough idea into a fully grilled, acceptance-driven vertical slice and a cold-start implementation handoff. |
+| [⚔️ `slice`](./slice/) | Plans a change in one `plan.md` (brief, evidence, architecture check, decisions, threats, acceptance, build, bootstrap), then runs a fresh implementer and an independent review from the planning context. |
 | [`grill`](./grill/) | Stress-tests a plan against the project's domain language and durable architecture decisions. |
 | [`uat`](./uat/) | Writes a concise, executable manual acceptance plan around observable user behavior and demo readiness. |
 | [`prd`](./prd/) | Builds a product requirements document through interview, codebase exploration, and module design. |
