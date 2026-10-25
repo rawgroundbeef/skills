@@ -101,10 +101,14 @@ Write these sections, in this order. Short is fine; missing is not.
    wait for a manual handoff when it is ready.
 4. **Implement.** Spawn a fresh-context subagent (never a fork) on the
    implementation-tier model with exactly the bootstrap paragraph and the
-   plan path, in its own worktree cut from the integration branch. It
-   builds its PR, runs the gates, and reports. If it says the plan is
-   insufficient, fix the plan and dispatch a new implementer; never answer
-   it from conversation memory.
+   plan path, in its own worktree cut from the plan branch's head (the
+   integration branch plus the plan), so the plan is in its tree; the plan
+   branch merges first and the PR rebases onto the integration branch. If
+   the plan must stay out of the PR, cut from the integration branch and
+   give the implementer the plan's absolute path in the planner's
+   checkout instead. It builds its PR, runs the gates, and reports. If it
+   says the plan is insufficient, fix the plan and dispatch a new
+   implementer; never answer it from conversation memory.
 5. **Review.** Run the `review` skill in a fresh-context subagent over the
    diff against the integration branch, giving it the plan path and the
    raw scope, never the implementer's conclusions. Every **Request
